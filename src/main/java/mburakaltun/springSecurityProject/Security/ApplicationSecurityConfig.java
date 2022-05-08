@@ -2,6 +2,7 @@ package mburakaltun.springSecurityProject.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -24,9 +25,14 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "index", "/css/*", "/js/*")
-                .permitAll()
+                .antMatchers("/", "index", "/css/*", "/js/*").permitAll()
+                .antMatchers("/api/**").hasRole(ApplicationUserRole.STUDENT.name())
+                .antMatchers(HttpMethod.POST, "/management/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.getApplicationUserPermission())
+                .antMatchers(HttpMethod.PUT, "/management/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.getApplicationUserPermission())
+                .antMatchers(HttpMethod.DELETE, "/management/**").hasAuthority(ApplicationUserPermission.COURSE_WRITE.getApplicationUserPermission())
+                .antMatchers(HttpMethod.GET, "/management/**").hasAnyRole(ApplicationUserRole.ADMIN.name(), ApplicationUserRole.ADMIN_TRAINEE.name())
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -36,14 +42,30 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     protected UserDetailsService userDetailsService() {
-        UserDetails burakAltunUser = User.builder()
-                .username("burakaltun")
+        UserDetails mburakaltunUser = User.builder()
+                .username("mburakaltun")
                 .password(passwordEncoder.encode("password"))
-                .roles("STUDENT")
+//                .roles(ApplicationUserRole.STUDENT.name())
+                .authorities(ApplicationUserRole.STUDENT.getGrantedAuthorities())
+                .build();
+
+        UserDetails begumSevdeUser = User.builder()
+                .username("begumsevde")
+                .password(passwordEncoder.encode("password"))
+//                .roles(ApplicationUserRole.ADMIN.name())
+                .authorities(ApplicationUserRole.ADMIN.getGrantedAuthorities())
+                .build();
+
+        UserDetails edenHazardUser = User.builder()
+                .username("edenhazard")
+                .password(passwordEncoder.encode("password"))
+//                .roles(ApplicationUserRole.ADMIN_TRAINEE.name())
+                .authorities(ApplicationUserRole.ADMIN_TRAINEE.getGrantedAuthorities())
                 .build();
 
         return new InMemoryUserDetailsManager(
-                burakAltunUser
+                mburakaltunUser,
+                begumSevdeUser
         );
     }
 }
