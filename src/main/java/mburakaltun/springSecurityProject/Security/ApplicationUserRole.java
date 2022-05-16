@@ -9,14 +9,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum ApplicationUserRole {
-    ADMIN(new ArrayList<ApplicationUserPermission>(Arrays.asList(
+    ADMIN(new ArrayList<>(Arrays.asList(
             ApplicationUserPermission.COURSE_READ,
             ApplicationUserPermission.COURSE_WRITE,
             ApplicationUserPermission.STUDENT_READ,
             ApplicationUserPermission.STUDENT_WRITE))
     ),
     STUDENT(new ArrayList<>()),
-    ADMIN_TRAINEE(new ArrayList<ApplicationUserPermission>(Arrays.asList(
+    ADMIN_TRAINEE(new ArrayList<>(Arrays.asList(
             ApplicationUserPermission.COURSE_READ,
             ApplicationUserPermission.STUDENT_READ)));
 
